@@ -80,7 +80,7 @@ public class DGARunner {
         DGALoggingUtil.setDGALogLevel(logLevel);
 
         try {
-            InputStream configurationIS = ClassLoader.getSystemClassLoader().getResourceAsStream("dga-config.xml");
+            InputStream configurationIS = getClass().getClassLoader().getResourceAsStream("dga-config.xml");
 
             DGAConfiguration fileConf = DGAXMLConfigurationParser.parse(configurationIS);
 

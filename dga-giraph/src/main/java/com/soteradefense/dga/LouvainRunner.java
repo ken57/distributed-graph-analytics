@@ -18,7 +18,6 @@
 
 package com.soteradefense.dga;
 
-import com.soteradefense.dga.io.formats.DGALongEdgeValueInputFormat;
 import com.soteradefense.dga.io.formats.LouvainVertexInputFormat;
 import com.soteradefense.dga.io.formats.LouvainVertexOutputFormat;
 import com.soteradefense.dga.louvain.giraph.LouvainComputation;
@@ -88,7 +87,7 @@ public class LouvainRunner {
             confForStep.setDGAGiraphProperty("-op", interimOutputPath);
             String[] dgaArguments;
             if (iteration == 0) {
-                confForStep.setDGAGiraphProperty("-eif", DGALongEdgeValueInputFormat.class.getCanonicalName());
+                confForStep.setDGAGiraphProperty("-eif", SpecialFormat.class.getCanonicalName());
                 confForStep.setDGAGiraphProperty("-eip", interimInputPath);
                 confForStep.setDGAGiraphProperty("-esd", interimOutputPath);
                 confForStep.convertToCommandLineArguments(LouvainComputation.class.getCanonicalName());

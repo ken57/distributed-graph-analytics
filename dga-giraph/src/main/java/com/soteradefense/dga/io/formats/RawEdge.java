@@ -55,6 +55,15 @@ public class RawEdge {
         this.edgeValue = tokenizer.hasMoreTokens() && !this.ignoreThird ? tokenizer.nextToken() : defaultEdgeValue;
     }
 
+    public RawEdge(String sourceId, String targetId, String edgeValue){
+        this.sourceId = sourceId;
+        this.targetId = targetId;
+        this.edgeValue = edgeValue;
+        this.delimiter = ",";
+        this.defaultEdgeValue = "1";
+        this.ignoreThird = false;
+    }
+
     public String getSourceId() {
         return sourceId;
     }

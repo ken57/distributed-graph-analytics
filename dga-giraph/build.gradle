@@ -9,7 +9,6 @@ sourceSets {
         resources {
             exclude 'dga-mr1-giraph'
             exclude 'dga-yarn-giraph'
-            exclude 'dga-config.xml'
             exclude 'dga'
         }
     }
@@ -19,6 +18,17 @@ configurations {
     hadoopProvided.transitive = true
     compile.extendsFrom hadoopProvided
 }
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    }
+}
+
+apply plugin: 'eu.appsatori.fatjar'
 
 dependencies {
     compile project(':dga-core')
@@ -54,3 +64,7 @@ task dist(dependsOn: 'distJars', type: Copy) {
     include "dga-yarn-giraph"
     into "${buildDir}/dist/bin"
 }
+
+fatJar {
+}
+
