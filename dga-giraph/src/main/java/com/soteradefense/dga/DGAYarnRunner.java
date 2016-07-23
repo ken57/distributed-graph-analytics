@@ -20,26 +20,38 @@ package com.soteradefense.dga;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 
+import org.apache.commons.cli.*;
+
 import java.security.PrivilegedAction;
 
 public class DGAYarnRunner {
     public static void main(final String [] args) throws Exception {
-        if (!UserGroupInformation.isSecurityEnabled()) {
-            UserGroupInformation.createRemoteUser(YarnConfiguration.DEFAULT_NM_NONSECURE_MODE_LOCAL_USER).doAs(new PrivilegedAction<Void>() {
-                @Override
-                public Void run() {
-                    try {
-                        DGARunner runner = new DGARunner();
-                        runner.run(args);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            });
-        } else {
-            DGARunner runner = new DGARunner();
-            runner.run(args);
+
+        Options options = DGACommandLineUtil.generateOptions();
+
+        String[] subsetArguments = new String[args.length - 4];
+        for (int i = 0; i < subsetArguments.length; i++) {
+            subsetArguments[i] = args[i + 4];
         }
+
+        CommandLineParser parser = new GnuParser();
+        CommandLine cmd = parser.parse(options, args);
+        String user = "nobody";
+        if (cmd.hasOption("u")) {
+            user = cmd.getOptionValue("u");
+        }
+
+        UserGroupInformation.createRemoteUser(user).doAs(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
+                try {
+                    DGARunner runner = new DGARunner();
+                    runner.run(args);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
     }
 }

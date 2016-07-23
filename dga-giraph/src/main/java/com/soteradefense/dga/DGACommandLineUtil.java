@@ -53,6 +53,7 @@ public class DGACommandLineUtil {
         Options options = new Options();
         options.addOption("h", false, "Prints this help documentation and exits");
         options.addOption("q", false, "Run analytic in quiet mode");
+        options.addOption("u", true, "user");
         options.addOption("D", true, "System parameters to pass through to be added to the conf");
         options.addOption("w", true, "The number of giraph workers to use for the analytic");
         options.addOption("ca", true, "Any custom arguments to pass in to giraph");
