@@ -25,6 +25,17 @@ sourceSets {
     }
 }
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    }
+}
+
+apply plugin: 'eu.appsatori.fatjar'
+
 dependencies {
     compile project(':dga-core')
     compile group: 'org.apache.spark', name: 'spark-core_2.10', version: '1.3.0'
@@ -89,3 +100,8 @@ task dist(dependsOn: 'distJars', type: Copy) {
     include "dga-yarn-graphx"
     into "${buildDir}/dist"
 }
+
+fatJar {
+  exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA' 
+}
+
