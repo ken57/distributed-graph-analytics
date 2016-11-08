@@ -66,5 +66,6 @@ task dist(dependsOn: 'distJars', type: Copy) {
 }
 
 fatJar {
+    zip64 true
 }
 
