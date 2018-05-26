@@ -17,7 +17,7 @@
  */
 package com.soteradefense.dga.graphx.pr
 
-import org.apache.spark.Logging
+import org.apache.spark.internal.Logging
 import org.apache.spark.graphx._
 
 import scala.reflect.ClassTag

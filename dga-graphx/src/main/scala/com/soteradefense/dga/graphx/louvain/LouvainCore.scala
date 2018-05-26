@@ -20,8 +20,8 @@ package com.soteradefense.dga.graphx.louvain
 import org.apache.spark.SparkContext._
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.graphx._
-import org.apache.spark.{Logging, SparkContext}
-
+import org.apache.spark.SparkContext
+import org.apache.spark.internal.Logging
 import scala.reflect.ClassTag
 
 

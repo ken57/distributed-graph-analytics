@@ -21,9 +21,7 @@ import java.util.Date
 
 import com.soteradefense.dga.graphx.config.Config
 import com.soteradefense.dga.graphx.harness.Harness
-import com.soteradefense.dga.graphx.hbse.HDFSHBSERunner
 import com.soteradefense.dga.graphx.io.formats.EdgeInputFormat
-import com.soteradefense.dga.graphx.kryo.DGAKryoRegistrator
 import com.soteradefense.dga.graphx.lc.HDFSLCRunner
 import com.soteradefense.dga.graphx.louvain.HDFSLouvainRunner
 import com.soteradefense.dga.graphx.neighboringcommunity.HDFSNeighboringCommunityRunner
@@ -51,7 +49,7 @@ object DGARunner {
   val NeighboringCommunities = "neighboringCommunities"
 
   val MinProgressConfiguration = "minProgress"
-  val MinProgressDefaultConfiguration = "2000"
+  val MinProgressDefaultConfiguration = "0"
   val ProgressCounterConfiguration = "progressCounter"
   val ProgressCounterDefaultConfiguration = "1"
   val DeltaConvergenceConfiguration = "delta"
@@ -81,7 +79,7 @@ object DGARunner {
     val sparkContext = new SparkContext(sparkConf)
     val parallelism = Integer.parseInt(commandLineConfig.customArguments.getOrElse(ParallelismConfiguration, applicationConfig.getString("parallelism")))
     var inputFormat: EdgeInputFormat = null
-    val hdfsUrl = applicationConfig.getString("hdfs.url")
+    val hdfsUrl = commandLineConfig.customArguments.getOrElse("hdfs.url", applicationConfig.getString("hdfs.url"))
     val inputPath = hdfsUrl + commandLineConfig.inputPath
     var outputPath = hdfsUrl + commandLineConfig.outputPath
     outputPath = if (outputPath.endsWith("/")) outputPath else outputPath + "/"
@@ -96,8 +94,6 @@ object DGARunner {
     analytic match {
       case WeaklyConnectedComponents | WeaklyConnectedComponentsGraphX =>
         runner = new HDFSWCCRunner(outputPath, commandLineConfig.edgeDelimiter)
-      case HighBetweennessSetExtraction =>
-        runner = new HDFSHBSERunner(outputPath, commandLineConfig.edgeDelimiter)
       case LouvainModularity =>
         val minProgress = commandLineConfig.customArguments.getOrElse(MinProgressConfiguration, MinProgressDefaultConfiguration).toInt
         val progressCounter = commandLineConfig.customArguments.getOrElse(ProgressCounterConfiguration, ProgressCounterDefaultConfiguration).toInt
@@ -133,15 +129,12 @@ object DGARunner {
   private def buildSparkConf(commandLineConfig: Config, applicationConfig: com.typesafe.config.Config): SparkConf = {
     val sparkConf = new SparkConf()
       .setAppName(commandLineConfig.sparkAppName)
-      .setJars(commandLineConfig.sparkJars.split(DefaultJarSplitDelimiter))
-    if (applicationConfig.hasPath("spark.master.url"))
-      sparkConf.setMaster(applicationConfig.getString("spark.master.url"))
-    if (applicationConfig.hasPath("spark.home"))
-      sparkConf.setSparkHome(applicationConfig.getString("spark.home"))
+      .setJars(Seq("dga-graphx-0.1.jar"))
+    sparkConf.setMaster(commandLineConfig.customArguments.getOrElse("spark.master.url", applicationConfig.getString("spark.master.url")))
+    sparkConf.setSparkHome(commandLineConfig.customArguments.getOrElse("spark.home", applicationConfig.getString("spark.home")))
     sparkConf.setAll(commandLineConfig.customArguments)
     if (commandLineConfig.useKryoSerializer) {
       sparkConf.set("spark.serializer", classOf[KryoSerializer].getCanonicalName)
-      sparkConf.set("spark.kryo.registrator", classOf[DGAKryoRegistrator].getCanonicalName)
     }
     sparkConf
   }

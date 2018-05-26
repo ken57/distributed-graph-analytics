@@ -104,7 +104,7 @@ abstract class AbstractLouvainRunner(var minimumCompressionProgress: Int, var pr
   override def write(kryo: Kryo, output: Output): Unit = {
     kryo.writeObject(output, this.minimumCompressionProgress)
     kryo.writeObject(output, this.progressCounter)
-    val objectArraySerializer = new ObjectArraySerializer
+    val objectArraySerializer = new ObjectArraySerializer(kryo, output.getClass())
     objectArraySerializer.write(kryo, output, this.qValues.asInstanceOf[Array[Object]])
   }
 
@@ -112,7 +112,7 @@ abstract class AbstractLouvainRunner(var minimumCompressionProgress: Int, var pr
   override def read(kryo: Kryo, input: Input): Unit = {
     this.minimumCompressionProgress = kryo.readObject(input, classOf[Int])
     this.progressCounter = kryo.readObject(input, classOf[Int])
-    val objectArraySerializer = new ObjectArraySerializer
+    val objectArraySerializer = new ObjectArraySerializer(kryo, input.getClass())
     this.qValues = objectArraySerializer.read(kryo, input, classOf[Array[Object]]).asInstanceOf[Array[(Int, Double)]]
   }
 }
